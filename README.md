@@ -1,7 +1,7 @@
 # Дипломное задание по курсу «JavaScript-программирование для начинающих»
 
 - Стек используемых технологий: javascript, html, git.
-- Ссылка на GitHub Pages website: ().
+- Ссылка на GitHub Pages website: (https://dimajs-cp-3.github.io/js-cp-diploma-edited/).
 
 ## Создание «информационной системы для предварительного бронирования билетов».
 
