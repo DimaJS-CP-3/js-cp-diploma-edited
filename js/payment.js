@@ -1,29 +1,34 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const ticketDetails = getJSON("ticket-details");
-  const ticketInfoWrapper = document.querySelector(".ticket__info-wrapper");
-  ticketInfoWrapper.innerHTML = "";
+const ticketTitle = document.querySelector('.ticket__title');
+const ticketChairs = document.querySelector('.ticket__chairs');
+const ticketHall = document.querySelector('.ticket__hall');
+const ticketStart = document.querySelector('.ticket__start');
+const ticketCost = document.querySelector('.ticket__cost');
+let listOfChairs = JSON.parse(window.localStorage.getItem('listOfChairs'));
+ticketTitle.textContent = window.localStorage.getItem('filmName');
+ticketHall.textContent = window.localStorage.getItem('hallName');
+ticketStart.textContent = window.localStorage.getItem('seanceTime');;
+ticketChairs.textContent = listOfChairs[0].row + '/' + listOfChairs[0].place;
+let coast = Number(listOfChairs[0].type === "standart" ? window.localStorage.getItem('priceStandart') : window.localStorage.getItem('priceVip'));
 
-  const textHtml = `
-    <p class='ticket__info'>На фильм: <span class='ticket__details ticket__title'>${ticketDetails.filmName}</span></p>
-    <p class='ticket__info'>Ряд/Место: <span class='ticket__details ticket__chairs'>${ticketDetails.strRowPlace}</span></p>
-    <p class='ticket__info'>В зале: <span class='ticket__details ticket__hall'>${ticketDetails.hallNameNumber}</span></p>
-    <p class='ticket__info'>Начало сеанса: <span class='ticket__details ticket__start'>${ticketDetails.seanceTime} - ${ticketDetails.seanceDay}</span></p>
-    <p class='ticket__info'>Стоимость: <span class='ticket__details ticket__cost'>${ticketDetails.totalCost}</span> рублей</p>
-    <button class='acceptin-button'>Получить код бронирования</button>
-    <p class='ticket__hint'>После оплаты билет будет доступен в этом окне, а также придёт вам на почту. Покажите QR-код нашему контроллёру у входа в зал.</p>
-    <p class='ticket__hint'>Приятного просмотра!</p>
-  `;
-  ticketInfoWrapper.insertAdjacentHTML("beforeend", textHtml);
+for (let i = 1; i < listOfChairs.length; i++)
+{
+    ticketChairs.textContent += ', ' + listOfChairs[i].row + '/' + listOfChairs[i].place;
+    coast += Number(listOfChairs[i].type === "standart" ? window.localStorage.getItem('priceStandart') : window.localStorage.getItem('priceVip'));
+}
+ticketCost.textContent = coast;
 
-  const acceptinButton = document.querySelector(".acceptin-button");
-  acceptinButton?.addEventListener("click", (event) => {
-    const hallsConfigurationObj = getJSON("pre-config-halls-paid-seats");
-    const hallConfiguration = hallsConfigurationObj[ticketDetails.hallId];
-    const requestBodyString = `event=sale_add&timestamp=${ticketDetails.seanceTimeStampInSec}&hallId=${ticketDetails.hallId}&seanceId=${ticketDetails.seanceId}&hallConfiguration=${hallConfiguration}`;
-    createRequest(requestBodyString, "PAYMENT", updateHtmlPayment, true);
-  });
+const acceptinButtonTicket = document.querySelector('.ticket__info-wrapper').querySelector('.acceptin-button');
 
-  function updateHtmlPayment(serverResponse) {
-    window.location.href = "ticket.html";
-  }
+function result(data)
+{
+    console.log(data);
+}
+
+acceptinButtonTicket.addEventListener("click", (event) =>
+{
+    event.preventDefault();
+    let hallConfig = window.localStorage.getItem('hallConfig');
+    let textreq = `event=sale_add&timestamp=${window.localStorage.getItem('currentTimestemp')}&hallId=${window.localStorage.getItem('hallId')}&seanceId=${window.localStorage.getItem('seanceId')}&hallConfiguration=${hallConfig}`;
+    requestApi(textreq, result);
+    location = 'ticket.html';
 });
